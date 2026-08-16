@@ -1,7 +1,16 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 
-const navLinks = document.querySelectorAll('.side-nav a[data-nav]');
+const navLinks = document.querySelectorAll('a[data-nav]');
 const blocks = document.querySelectorAll('.block[id]');
+const mobileNav = document.getElementById('mobile-nav');
+const mobileNavToggle = mobileNav?.querySelector('.mobile-nav-toggle');
+
+const setMobileNavOpen = (isOpen) => {
+  if (!mobileNav || !mobileNavToggle) return;
+  mobileNav.classList.toggle('is-open', isOpen);
+  mobileNavToggle.setAttribute('aria-expanded', String(isOpen));
+  mobileNavToggle.setAttribute('aria-label', isOpen ? 'Close section navigation' : 'Open section navigation');
+};
 
 const setActiveNav = (id) => {
   navLinks.forEach((link) => {
@@ -35,7 +44,24 @@ navLinks.forEach((link) => {
       block: 'start',
     });
     setActiveNav(target.id);
+    setMobileNavOpen(false);
   });
+});
+
+mobileNavToggle?.addEventListener('click', (event) => {
+  event.stopPropagation();
+  setMobileNavOpen(!mobileNav.classList.contains('is-open'));
+});
+
+document.addEventListener('pointerdown', (event) => {
+  if (mobileNav && !mobileNav.contains(event.target)) setMobileNavOpen(false);
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    setMobileNavOpen(false);
+    mobileNavToggle?.focus();
+  }
 });
 
 let scrollFrame;
